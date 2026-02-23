@@ -1,3 +1,4 @@
+import os
 from typing import Annotated
 
 import requests
@@ -8,7 +9,10 @@ from pydantic import BaseModel, Field
 from starlette.config import Config
 from starlette.responses import PlainTextResponse
 
-config = Config(".env")
+if os.path.exists(".env"):
+    config = Config(".env")
+else:
+    config = Config(environ=os.environ)
 
 DEBUG = config("DEBUG", cast=bool, default=False)
 OPENAI_BASE_URL = config("OPENAI_BASE_URL", default=None)
@@ -19,6 +23,7 @@ openai = OpenAI(base_url=OPENAI_BASE_URL, api_key=OPENAI_API_KEY)
 
 app = FastAPI()
 router = APIRouter(prefix="/v1")
+
 
 def get_markItDown():
     session = requests.Session()
@@ -39,9 +44,9 @@ def get_markItDown():
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0",
         }
     )
-    
-    
+
     return MarkItDown(requests_session=session)
+
 
 MarkItDownDep = Annotated["MarkItDown", Depends(get_markItDown)]
 
@@ -54,15 +59,17 @@ If it' some other type of page, you want to start with `# Title` and then the te
 The user will send the raw text in the next message. Then you will respond with the cleaned up text and nothing more.
 """
 
+
 class ConvertRequest(BaseModel):
     uri: str = Field(examples=["https://openai.com"])
     model: str = Field(default=DEFAULT_MODEL)
 
+
 @router.post("/convert")
-async def transcribe(request: ConvertRequest, markitdown = Depends(get_markItDown)):
+async def transcribe(request: ConvertRequest, markitdown=Depends(get_markItDown)):
     result = markitdown.convert_uri(request.uri).markdown
-    
-    response = openai.responses.create( # noqa
+
+    response = openai.responses.create(  # noqa
         model=request.model,
         input=[
             {
@@ -76,13 +83,14 @@ async def transcribe(request: ConvertRequest, markitdown = Depends(get_markItDow
         ],
         stream=False,
     )
-    
+
     text = ""
     for output in response.output:
         if output.type == "message" and output.role == "assistant":
             for content in output.content:
                 text += content.text
-    
+
     return PlainTextResponse(text)
+
 
 app.include_router(router)
