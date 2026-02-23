@@ -1,0 +1,55 @@
+name: Build and Publish Containers
+
+on:
+  push:
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Container
+        run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          SHA_SHORT=$(echo "${{ github.sha }}" | cut -c1-6)
+          BRANCH_NAME=$(echo "${{ github.ref_name }}" | tr '/' '-')
+          
+          echo "Building Container Image..."
+          docker build -f Dockerfile -t markitdown-fastapi .
+          
+          # Define tags
+          TAGS="ghcr.io/$REPO_LOWER/markitdown-fastapi:$SHA_SHORT"
+          
+          if [ "${{ github.ref_name }}" = "master" || "${{ github.ref_name }}" = "main" ]; then
+            TAGS="$TAGS ghcr.io/$REPO_LOWER/markitdown-fastapi:latest"
+          else
+            TAGS="$TAGS ghcr.io/$REPO_LOWER/markitdown-fastapi:$BRANCH_NAME"
+            TAGS="$TAGS ghcr.io/$REPO_LOWER/markitdown-fastapi:$BRANCH_NAME-$SHA_SHORT"
+          fi
+          
+          echo "Tagging and Pushing Container Image..."
+          for TAG in $TAGS; do
+            echo "Pushing $TAG"
+            docker tag markitdown-fastapi $TAG
+            docker push $TAG
+          done

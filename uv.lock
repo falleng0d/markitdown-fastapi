@@ -145,33 +145,6 @@ wheels = [
 ]
 
 [[package]]
-name = "example"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "fastapi", extra = ["standard"] },
-    { name = "markitdown" },
-    { name = "openai" },
-    { name = "pydantic" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi", extras = ["standard"], specifier = ">=0.131.0" },
-    { name = "markitdown", specifier = ">=0.1.5" },
-    { name = "openai", specifier = ">=2.21.0" },
-    { name = "pydantic", specifier = ">=2.12.5" },
-]
-
-[package.metadata.requires-dev]
-dev = [{ name = "ruff", specifier = ">=0.15.2" }]
-
-[[package]]
 name = "fastapi"
 version = "0.131.0"
 source = { registry = "https://pypi.org/simple" }
@@ -471,6 +444,33 @@ sdist = { url = "https://files.pythonhosted.org/packages/83/93/3b93c291c99d09f64
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b1/8b/fd7e042455a829a1ede0bc8e9e3061aa6c7c4cf745385526ef62ff1b5a5b/markitdown-0.1.5-py3-none-any.whl", hash = "sha256:5180a9a841e20fc01c2c09dbc5d039638429bbebcdc2af1b2615c3c427840434", size = 63402, upload-time = "2026-02-20T19:45:27.195Z" },
 ]
+
+[[package]]
+name = "markitdown-fastapi"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "fastapi", extra = ["standard"] },
+    { name = "markitdown" },
+    { name = "openai" },
+    { name = "pydantic" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", extras = ["standard"], specifier = ">=0.131.0" },
+    { name = "markitdown", specifier = ">=0.1.5" },
+    { name = "openai", specifier = ">=2.21.0" },
+    { name = "pydantic", specifier = ">=2.12.5" },
+]
+
+[package.metadata.requires-dev]
+dev = [{ name = "ruff", specifier = ">=0.15.2" }]
 
 [[package]]
 name = "markupsafe"
