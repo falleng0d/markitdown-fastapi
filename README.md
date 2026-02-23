@@ -1,4 +1,4 @@
-# MarkItDown-FastAPI
+# MarkItDown FastAPI
 
 A FastAPI application that converts web pages to clean, formatted markdown using [MarkItDown](https://github.com/microsoft/markitdown) and [OpenAI](https://openai.com/) for text cleanup.
 
