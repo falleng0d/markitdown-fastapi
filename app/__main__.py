@@ -9,6 +9,8 @@ from pydantic import BaseModel, Field
 from starlette.config import Config
 from starlette.responses import PlainTextResponse
 
+from app.middleware.logging import LoggingMiddleware
+
 if os.path.exists(".env"):
     config = Config(".env")
 else:
@@ -22,6 +24,7 @@ DEFAULT_MODEL = config("DEFAULT_MODEL", default="gpt-4o")
 openai = OpenAI(base_url=OPENAI_BASE_URL, api_key=OPENAI_API_KEY)
 
 app = FastAPI()
+app.add_middleware(LoggingMiddleware)
 router = APIRouter(prefix="/v1")
 
 
