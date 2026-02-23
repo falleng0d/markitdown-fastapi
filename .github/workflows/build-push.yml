@@ -38,13 +38,13 @@ jobs:
           docker build -f Dockerfile -t markitdown-fastapi .
           
           # Define tags
-          TAGS="ghcr.io/$REPO_LOWER/markitdown-fastapi:$SHA_SHORT"
+          TAGS="ghcr.io/$REPO_LOWER:$SHA_SHORT"
           
           if [ "${{ github.ref_name }}" = "master" ] || [ "${{ github.ref_name }}" = "main" ]; then
-            TAGS="$TAGS ghcr.io/$REPO_LOWER/markitdown-fastapi:latest"
+            TAGS="$TAGS ghcr.io/$REPO_LOWER:latest"
           else
-            TAGS="$TAGS ghcr.io/$REPO_LOWER/markitdown-fastapi:$BRANCH_NAME"
-            TAGS="$TAGS ghcr.io/$REPO_LOWER/markitdown-fastapi:$BRANCH_NAME-$SHA_SHORT"
+            TAGS="$TAGS ghcr.io/$REPO_LOWER:$BRANCH_NAME"
+            TAGS="$TAGS ghcr.io/$REPO_LOWER:$BRANCH_NAME-$SHA_SHORT"
           fi
           
           echo "Tagging and Pushing Container Image..."
